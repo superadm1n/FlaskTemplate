@@ -1,0 +1,57 @@
+{% extends "base_site.html" %}
+
+{% block title %} Login {% endblock title %}
+
+{% block stylesheets %}
+{{ super() }}
+{% endblock stylesheets %}
+
+{% block body %}
+{{ super() }}
+<div>
+  <a class="hiddenanchor" id="register"></a>
+
+  <div class="login_wrapper">
+    <div class="form login_form">
+      <section>
+        <form method="post" action="{{ url_for('base_blueprint.register') }}">
+
+          {{ form.hidden_tag() }}
+          <h1>Registration Form</h1>
+
+          <div>
+            {{ form.username(class="form-control", placeholder='Username') }}
+          </div>
+          <div>
+            {{ form.email(class="form-control", placeholder='Email') }}
+          </div>
+          <div>
+            {{ form.password(class="form-control", placeholder='Password') }}
+          </div>
+          <div>
+            {{ form.confirm_password(class="form-control", placeholder='Confirm Password') }}
+          </div>
+
+          <div>
+            {{ form.submit(class="btn btn-default submit") }}
+          </div>
+
+          <div class="clearfix"></div>
+
+          <div class="separator">
+
+            <div class="clearfix"></div>
+            <br/>
+
+            <div>
+              <h1><i class="fa fa-square"></i> Register</h1>
+              <p>©2018 All Rights Reserved. Privacy and Terms</p>
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock body %}
+

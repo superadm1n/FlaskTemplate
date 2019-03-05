@@ -1,0 +1,51 @@
+{% extends "base_site.html" %}
+
+{% block title %} Login {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+{% endblock stylesheets %}
+
+{% block body %}
+  {{ super() }}
+  <div>
+    <a class="hiddenanchor" id="signin"></a>
+
+    <div class="login_wrapper">
+      <div class="form login_form">
+        <section >
+          <form method="post" action="{{ url_for('base_blueprint.log_user_in') }}">
+
+            {{ login_form.hidden_tag() }}
+            <h1>Login Form</h1>
+
+              <div>
+              {{ login_form.username(class="form-control", placeholder='Username') }}
+              </div>
+              <div>
+              {{ login_form.password(class="form-control", placeholder='Password') }}
+              </div>
+
+            <div>
+            {{ login_form.submit(class="btn btn-default submit") }}
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="separator">
+
+              <div class="clearfix"></div>
+              <br />
+
+              <div>
+                <h1><i class="fa fa-square"></i> Login</h1>
+                <p>©2018 All Rights Reserved. Privacy and Terms</p>
+              </div>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </div>
+{% endblock body %}
+
