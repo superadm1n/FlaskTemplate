@@ -8,6 +8,10 @@ from logging import basicConfig, DEBUG, getLogger, StreamHandler
 
 import os
 import datetime
+script_path = os.path.dirname(os.path.abspath(__file__))
+# creates a list of all of the directories in the app package to later import
+# them as blueprints
+blueprints = [x for x in os.listdir(script_path) if os.path.isdir('{}/{}'.format(script_path, x)) and '__' not in x]
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -26,7 +30,7 @@ def register_extensions(app):
 
 
 def register_blueprints(app):
-    for module_name in ('base',):
+    for module_name in blueprints:
         module = import_module('app.{}.routes'.format(module_name))
         app.register_blueprint(module.blueprint)
 
