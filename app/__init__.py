@@ -21,6 +21,7 @@ bcrypt = Bcrypt()
 from app.scheduler import start_schedule
 from app.base.models import User, Role
 from app.base.util import hash_password
+flask_app_obj = Flask(__name__, static_folder='base/static')
 
 #scheduler = start_schedule()
 
@@ -99,7 +100,7 @@ def configure_user_timeout(app):
 
 
 def create_app():
-    app = Flask(__name__, static_folder='base/static')
+    app = flask_app_obj
     app.config.from_object(ProductionConfig)
 
     register_extensions(app)
@@ -113,7 +114,7 @@ def create_app():
 
 
 def create_test_app(db_file):
-    app = Flask(__name__, static_folder='base/static')
+    app = flask_app_obj
     app.config.from_object(TestConfig)
 
     register_extensions(app)
