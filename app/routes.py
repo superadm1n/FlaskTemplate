@@ -14,7 +14,7 @@ def index():
     return render_template('home.html')
 
 
-#@blueprint.route('/<template>')
+#@flask_app_obj.route('/<template>')
 #@login_required
 #def route_template(template):
 #    return render_template(template + '.html')
@@ -22,7 +22,7 @@ def index():
 
 # Login & Registration
 
-@flask_app_obj.route('/login', methods=['GET', 'POST'])
+@flask_app_obj.route('/login', methods=['GET'])
 def login():
     login_form = LoginForm(request.form)
 
@@ -60,6 +60,7 @@ def logout():
     logout_user()
     return redirect(url_for('base_blueprint.login'))
 
+
 @flask_app_obj.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -80,6 +81,7 @@ def register():
     return render_template('register.html', form=form)
 
 # Errors
+
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
