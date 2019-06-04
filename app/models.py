@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     last_login = Column(db.DateTime, nullable=True)
 
     roles = db.relationship('Role', secondary='user_roles')
+    groups = db.relationship('Group', secondary='group_users')
 
     def __init__(self, **kwargs):
         for property, value in kwargs.items():
@@ -46,6 +47,18 @@ class Role(db.Model):
 
     def __repr__(self):
         return 'Role({}, {})'.format(self.id, self.name)
+    
+
+# Define the Group data-model
+class Group(db.Model):
+    __tablename__ = 'group'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+    roles = db.relationship('Role', secondary='group_roles')
+    users = db.relationship('User', secondary='group_users')
+
+    def __repr__(self):
+        return 'Group({}, {})'.format(self.id, self.name)
 
 
 # Define the UserRoles association table
@@ -54,6 +67,22 @@ class UserRoles(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
+
+
+# Define the GroupRoles association table
+class GroupRoles(db.Model):
+    __tablename__ = 'group_roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    group_id = db.Column(db.Integer(), db.ForeignKey('group.id', ondelete='CASCADE'))
+    role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
+
+
+# Define the GroupUsers association table
+class GroupUsers(db.Model):
+    __tablename__ = 'group_users'
+    id = db.Column(db.Integer(), primary_key=True)
+    group_id = db.Column(db.Integer(), db.ForeignKey('group.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
 
 
 @login_manager.user_loader
