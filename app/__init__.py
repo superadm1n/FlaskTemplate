@@ -8,22 +8,28 @@ from logging import basicConfig, DEBUG, getLogger, StreamHandler
 
 import os
 import datetime
-script_path = os.path.dirname(os.path.abspath(__file__))
-# creates a list of all of the directories in the app package to later import
-# them as blueprints
-blueprints = [x for x in os.listdir(script_path) if os.path.isdir('{}/{}'.format(script_path, x)) and '__' not in x]
+# Full directory path of the flask app
+app_path = os.path.dirname(os.path.abspath(__file__))
+# Final directory of flask app
+app_dir = os.path.split(app_path)[-1]
+# creates a list of all of all the directories in the plugins folder which are
+# the plugin blueprint and add them as blueprints
+plugin_path = os.path.join(app_path, 'plugins')
+blueprints = [x for x in os.listdir(plugin_path)
+              if os.path.isdir(os.path.join(plugin_path, x))]
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-dir_path = os.path.dirname(os.path.realpath(__file__))
 bcrypt = Bcrypt()
 
-from app.scheduler import start_schedule
-from app.base.models import User, Role
-from app.base.util import hash_password
-flask_app_obj = Flask(__name__, static_folder='base/static')
+from app.lib.scheduler import BackgroundScheduler
+from app.models import User, Role
+from app.lib.passwords import hash_password
+flask_app_obj = Flask(__name__, static_folder='static', template_folder='templates')
+from app import routes  # Gives us the base application routes
 
-#scheduler = start_schedule()
+scheduler = BackgroundScheduler()
+scheduler.start()
 
 def register_extensions(app):
     db.init_app(app)
@@ -32,7 +38,7 @@ def register_extensions(app):
 
 def register_blueprints(app):
     for module_name in blueprints:
-        module = import_module('app.{}.routes'.format(module_name))
+        module = import_module('{}.plugins.{}.routes'.format(app_dir, module_name))
         app.register_blueprint(module.blueprint)
 
 
@@ -109,7 +115,6 @@ def create_app():
     configure_logs(app)
 
     configure_user_timeout(app)
-    start_schedule(app)
     return app
 
 
