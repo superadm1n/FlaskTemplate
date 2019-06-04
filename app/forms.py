@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import PasswordField, StringField, SubmitField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, EqualTo, ValidationError, Email
-from app.base.models import User
+from app.models import User
 
 
 class CustomSelectField(SelectField):

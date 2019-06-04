@@ -1,20 +1,20 @@
 from flask import render_template, redirect, request, url_for, flash
 from flask_login import current_user, login_required, login_user, logout_user
 from .forms import LoginForm, RegistrationForm
-from .util import check_password, hash_password, required_roles
+from app.lib.flashes import raise_flash_messages
+from app.lib.passwords import check_password, hash_password
+from app.lib.route_access import required_roles
 from datetime import datetime
-from app import db, login_manager
-from app.base import blueprint
-from app.base.models import User, Role
-from app.base.util import raise_flash_messages
+from app import db, login_manager, flask_app_obj
+from app.models import User, Role
 
 
-@blueprint.route('/')
+@flask_app_obj.route('/')
 def index():
     return render_template('home.html')
 
 
-#@blueprint.route('/<template>')
+#@flask_app_obj.route('/<template>')
 #@login_required
 #def route_template(template):
 #    return render_template(template + '.html')
@@ -22,7 +22,7 @@ def index():
 
 # Login & Registration
 
-@blueprint.route('/login', methods=['GET', 'POST'])
+@flask_app_obj.route('/login', methods=['GET'])
 def login():
     login_form = LoginForm(request.form)
 
@@ -31,7 +31,7 @@ def login():
     return render_template('login.html', login_form=login_form)
 
 
-@blueprint.route('/login/user', methods=['POST'])
+@flask_app_obj.route('/login/user', methods=['POST'])
 def log_user_in():
     login_form = LoginForm()
 
@@ -54,13 +54,14 @@ def log_user_in():
         return redirect('base_blueprint.login')
 
 
-@blueprint.route('/logout')
+@flask_app_obj.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('base_blueprint.login'))
 
-@blueprint.route('/register', methods=['GET', 'POST'])
+
+@flask_app_obj.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('base_blueprint.index'))
@@ -81,21 +82,22 @@ def register():
 
 # Errors
 
+
 @login_manager.unauthorized_handler
 def unauthorized_handler():
     return render_template('errors/page_403.html'), 403
 
 
-@blueprint.errorhandler(403)
+@flask_app_obj.errorhandler(403)
 def access_forbidden(error):
     return render_template('errors/page_403.html'), 403
 
 
-@blueprint.errorhandler(404)
+@flask_app_obj.errorhandler(404)
 def not_found_error(error):
     return render_template('errors/page_404.html'), 404
 
 
-@blueprint.errorhandler(500)
+@flask_app_obj.errorhandler(500)
 def internal_error(error):
     return render_template('errors/page_500.html'), 500

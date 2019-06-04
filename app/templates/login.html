@@ -2,19 +2,14 @@
 
 {% block title %} Login {% endblock title %}
 
-{% block stylesheets %}
-  {{ super() }}
-{% endblock stylesheets %}
-
-{% block body %}
-  {{ super() }}
+{% block content %}
   <div>
     <a class="hiddenanchor" id="signin"></a>
 
     <div class="login_wrapper">
       <div class="form login_form">
         <section >
-          <form method="post" action="{{ url_for('base_blueprint.log_user_in') }}">
+          <form method="post" action="{{ url_for('log_user_in') }}">
 
             {{ login_form.hidden_tag() }}
             <h1>Login Form</h1>
@@ -47,5 +42,5 @@
       </div>
     </div>
   </div>
-{% endblock body %}
+{% endblock content %}
 

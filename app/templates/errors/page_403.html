@@ -14,7 +14,7 @@
         <h1 class="error-number">403</h1>
         <h2>Access Denied</h2>
         {% if current_user.is_anonymous == True %}
-          <h3>You must be logged in to access this resource. <a href="{{ url_for('base_blueprint.login') }}">Log In</a></h3>
+          <h3>You must be logged in to access this resource. <a href="{{ url_for('login') }}">Log In</a></h3>
         {% else %}
           <h3>You do not have permission to access this resource.</h3>
         {% endif %}
