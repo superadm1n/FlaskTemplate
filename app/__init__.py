@@ -64,7 +64,7 @@ def configure_database(app):
 
 
 def configure_logs(app):
-    basicConfig(filename='error.log', level=DEBUG)
+    #basicConfig(filename='error.log', level=60)
     logger = getLogger()
     logger.addHandler(StreamHandler())
 
