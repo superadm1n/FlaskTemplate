@@ -35,8 +35,16 @@ class User(db.Model, UserMixin):
         :param args: roles
         :return:
         '''
+        # Gets all of the associated roles a user has access to via their assigned groups
+        group_associated_roles = []
+        for group in self.groups:
+            for role in group.roles:
+                group_associated_roles.append(role)
 
-        return bool(set(args) & {role.name for role in self.roles})
+        # List containing all of the roles a user is associated with
+        all_associated_roles = group_associated_roles + self.roles
+
+        return bool(set(args) & {role.name for role in all_associated_roles})
 
 
 # Define the Role data-model

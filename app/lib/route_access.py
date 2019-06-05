@@ -1,4 +1,4 @@
-from flask import redirect, url_for
+from flask import redirect, url_for, abort
 from flask_login import current_user
 from functools import wraps
 
@@ -13,10 +13,10 @@ def required_roles(*roles):
         @wraps(f)
         def wrapped(*args, **kwargs):
             try:
-                if bool(set(roles) & {role.name for role in current_user.roles}) is False:
-                    return redirect(url_for('base_blueprint.route_default'))
+                if current_user.has_role(*roles) is False:
+                    abort(401)
             except AttributeError:
-                return redirect(url_for('base_blueprint.route_default'))
+                abort(401)
             return f(*args, **kwargs)
 
         return wrapped
