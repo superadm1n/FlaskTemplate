@@ -16,9 +16,7 @@ app_path = os.path.dirname(os.path.abspath(__file__))
 # Final directory of flask app
 app_dir = os.path.split(app_path)[-1]
 
-
 from app.lib.passwords import hash_password
-
 from app.lib.scheduler import BackgroundScheduler
 from app.models import User, Role
 flask_app_obj = Flask(__name__, static_folder='static', template_folder='templates')
@@ -27,7 +25,6 @@ from app import routes  # Gives us the base application routes
 scheduler = BackgroundScheduler()
 scheduler.start()
 from app.plugins.Plugin import Plugin
-
 
 # creates a list of all of all the directories in the plugins folder which are
 # the plugin blueprint and add them as blueprints
