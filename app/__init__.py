@@ -37,6 +37,7 @@ def register_extensions(app):
 
 
 def register_blueprints(app):
+
     for module_name in blueprints:
         module = import_module('{}.plugins.{}.routes'.format(app_dir, module_name))
         app.register_blueprint(module.blueprint)

@@ -1,0 +1,16 @@
+                                                Plugin Methodology
+                                              Author: Kyle Kowalczyk
+                                           Intended Audience: Developers
+
+Overview:
+This document outlines the methodology of plugins for this system. A plugin in its basic form is a flask blueprint,
+the key difference is instead of just implementing a blueprint via flasks standard implementation using the Blueprint
+class a plugin will use the Plugin class which is located at app/plugins/Plugin.py
+
+Why use Plugin Class over Blueprint:
+
+The Plugin class is what will hold data about the blueprint beyond what just the flask.Blueprint class needs to know.
+This is mainly for things like route restriction and database modification scripts etc.
+
+
+
