@@ -1,3 +1,4 @@
+from app import scheduler
 from flask import Blueprint, abort
 from flask_login import current_user
 from functools import wraps
@@ -15,6 +16,7 @@ class Plugin(Blueprint):
         '''
         super().__init__(*args, **kwargs)
         self.access_roles = access_roles
+        self.application_scheduler = scheduler
 
     def required_roles(*roles):
         '''Custom function for checking if a user has the required rolls to access a resource.
