@@ -1,4 +1,13 @@
 from app.plugins.test import plugin
+from flask_login import current_user
+from flask import abort
+
+@plugin.before_request
+def validate_logged_in():
+    pass
+    # remove the comments below to restrict entire blueprint to only authenticated users.
+    # if not current_user.is_authenticated:
+    #     abort(401)
 
 @plugin.route('/')
 def test():
