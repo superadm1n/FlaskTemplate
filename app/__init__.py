@@ -43,8 +43,8 @@ def register_blueprints(app):
     route_restriction_roles = []
     for module_name in blueprints:
         module = import_module('{}.plugins.{}.routes'.format(app_dir, module_name))
-        route_restriction_roles += module.blueprint.access_roles
-        app.register_blueprint(module.blueprint)
+        route_restriction_roles += module.plugin.access_roles
+        app.register_blueprint(module.plugin)
 
     # return list of route restrictions for later processing
     return route_restriction_roles
