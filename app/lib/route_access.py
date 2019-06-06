@@ -20,3 +20,4 @@ def required_roles(*roles):
             return f(*args, **kwargs)
 
         return wrapped
+    return wrapper

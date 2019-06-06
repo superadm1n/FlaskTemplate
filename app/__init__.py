@@ -15,7 +15,8 @@ app_dir = os.path.split(app_path)[-1]
 # the plugin blueprint and add them as blueprints
 plugin_path = os.path.join(app_path, 'plugins')
 blueprints = [x for x in os.listdir(plugin_path)
-              if os.path.isdir(os.path.join(plugin_path, x))]
+              if os.path.isdir(os.path.join(plugin_path, x))
+              and not x.startswith('__')]
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -37,11 +38,16 @@ def register_extensions(app):
 
 
 def register_blueprints(app):
-
+    # Container for holding route restrictions
+    route_restriction_roles = []
     for module_name in blueprints:
         module = import_module('{}.plugins.{}.routes'.format(app_dir, module_name))
+        route_restriction_roles += module.blueprint.access_roles
         app.register_blueprint(module.blueprint)
 
+
+    # return list of route restrictions for later processing
+    return route_restriction_roles
 
 def init_db():
     role = Role(name='admin')
@@ -53,7 +59,7 @@ def init_db():
     db.session.commit()
 
 
-def configure_database(app):
+def configure_database(app, route_restriction_roles):
 
     @app.before_first_request
     def initialize_database():
@@ -62,6 +68,15 @@ def configure_database(app):
     @app.teardown_request
     def shutdown_session(exception=None):
         db.session.remove()
+
+    # takes all of the route restriction roles to the database if they dont exist.
+    # this will make sure any plugin will have the proper roles so it doesnt throw a 500 error.
+    with flask_app_obj.app_context():
+        for role in route_restriction_roles:
+            if not Role.query.filter_by(name=role).first():
+                r = Role(name=role)
+                db.session.add(r)
+            db.session.commit()
 
 
 def configure_logs(app):
@@ -90,8 +105,8 @@ def create_app():
     app.config.from_object(ProductionConfig)
 
     register_extensions(app)
-    register_blueprints(app)
-    configure_database(app)
+    route_restrictions = register_blueprints(app)
+    configure_database(app, route_restrictions)
     configure_logs(app)
 
     configure_user_timeout(app)
@@ -108,8 +123,8 @@ def create_test_app(db_file):
     app.config['SECRET_KEY'] = 'Test_key'
 
     register_extensions(app)
-    register_blueprints(app)
-    configure_database(app)
+    route_restrictions = register_blueprints(app)
+    configure_database(app, route_restrictions)
     configure_logs(app)
     configure_user_timeout(app)
     with app.app_context():
