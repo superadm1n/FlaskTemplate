@@ -1,4 +1,5 @@
 from app.config import ProductionConfig, TestConfig
+from app.plugins.Plugin import Plugin
 import datetime
 from flask import Flask, g, session
 from flask_bcrypt import Bcrypt
@@ -44,7 +45,6 @@ def register_blueprints(app):
         module = import_module('{}.plugins.{}.routes'.format(app_dir, module_name))
         route_restriction_roles += module.blueprint.access_roles
         app.register_blueprint(module.blueprint)
-
 
     # return list of route restrictions for later processing
     return route_restriction_roles

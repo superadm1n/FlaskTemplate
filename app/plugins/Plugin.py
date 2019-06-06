@@ -34,3 +34,12 @@ class Plugin(Blueprint):
 
             return wrapped
         return wrapper
+
+    def current_user_has_roles(self, *roles):
+        try:
+            if current_user.has_role(*roles):
+                return True
+            else:
+                return False
+        except AttributeError:
+            return False

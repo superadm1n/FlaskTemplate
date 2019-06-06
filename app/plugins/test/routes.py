@@ -1,12 +1,10 @@
-from app.plugins.test import blueprint
-from app.lib.route_access import required_roles
+from app.plugins.test import plugin
 
-
-@blueprint.route('/')
+@plugin.route('/')
 def test():
     return '<h1>This is your example plugin route</h1>'
 
-@blueprint.route('/restricted')
-@blueprint.required_roles('test1')
+@plugin.route('/restricted')
+@plugin.required_roles('test1')
 def restricted():
-    pass
+    return '<h1>This is your example of a restricted route</h1>'

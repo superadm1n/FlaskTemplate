@@ -1,6 +1,6 @@
 from app.plugins.Plugin import Plugin
 
-blueprint = Plugin(
+plugin = Plugin(
     name='test_blueprint',
     import_name=__name__,
     url_prefix='/test',

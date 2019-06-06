@@ -18,5 +18,11 @@ This is mainly for things like route restriction and database modification scrip
 
 
                                         Restricting access to routes
-If your blueprint or parts of your blueprint need to restrict access. Plugins
+If your blueprint or parts of your blueprint need to restrict access. Plugins are supported to implement route
+restriction in the following ways
+
+Decorating Routes:
+In the plugin blueprint you may restrict access to a single route by using the @blueprint.required_roles() decorator.
+the required_roles decorator takes an unlimited amount of string arguments that correspond to the role names that
+the user needs to be associated to for route restriction.
 
