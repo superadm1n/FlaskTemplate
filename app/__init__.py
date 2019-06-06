@@ -15,9 +15,9 @@ app_dir = os.path.split(app_path)[-1]
 # creates a list of all of all the directories in the plugins folder which are
 # the plugin blueprint and add them as blueprints
 plugin_path = os.path.join(app_path, 'plugins')
-blueprints = [x for x in os.listdir(plugin_path)
-              if os.path.isdir(os.path.join(plugin_path, x))
-              and not x.startswith('__')]
+plugins = [x for x in os.listdir(plugin_path)
+           if os.path.isdir(os.path.join(plugin_path, x))
+           and not x.startswith('__')]
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -38,10 +38,10 @@ def register_extensions(app):
     login_manager.init_app(app)
 
 
-def register_blueprints(app):
+def register_plugins(app):
     # Container for holding route restrictions
     route_restriction_roles = []
-    for module_name in blueprints:
+    for module_name in plugins:
         module = import_module('{}.plugins.{}.routes'.format(app_dir, module_name))
         route_restriction_roles += module.plugin.access_roles
         app.register_blueprint(module.plugin)
@@ -105,7 +105,7 @@ def create_app():
     app.config.from_object(ProductionConfig)
 
     register_extensions(app)
-    route_restrictions = register_blueprints(app)
+    route_restrictions = register_plugins(app)
     configure_database(app, route_restrictions)
     configure_logs(app)
 
@@ -123,7 +123,7 @@ def create_test_app(db_file):
     app.config['SECRET_KEY'] = 'Test_key'
 
     register_extensions(app)
-    route_restrictions = register_blueprints(app)
+    route_restrictions = register_plugins(app)
     configure_database(app, route_restrictions)
     configure_logs(app)
     configure_user_timeout(app)
