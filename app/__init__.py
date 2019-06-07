@@ -21,6 +21,7 @@ from app.lib.passwords import hash_password
 from app.models import User, Role
 flask_app_obj = Flask(__name__, static_folder='static', template_folder='templates')
 from app import routes  # Gives us the base application routes
+login_manager.init_app(flask_app_obj)
 
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -51,9 +52,10 @@ def user_timeout():
     g.user = current_user
 
 
-def register_extensions(app):
-    db.init_app(app)
-    login_manager.init_app(app)
+def prep_db(app):
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
 
 
 def register_plugins(app):
@@ -99,7 +101,7 @@ def create_app():
     app = flask_app_obj
     app.config.from_object(ProductionConfig)
 
-    register_extensions(app)
+    prep_db(app)
     route_restrictions = register_plugins(app)
     update_plugin_roles(route_restrictions)
     configure_logs(app)
@@ -116,7 +118,7 @@ def create_test_app(db_file):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'Test_key'
 
-    register_extensions(app)
+    prep_db(app)
     _ = register_plugins(app)
     #update_plugin_roles(route_restrictions)
     configure_logs(app)

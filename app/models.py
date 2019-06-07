@@ -12,7 +12,9 @@ class User(db.Model, UserMixin):
     email = Column(String(120), unique=True)
     password = Column(String(120))
     last_login = Column(db.DateTime, nullable=True)
+    date_created = db.Column(db.DateTime, default=datetime.datetime.now)
 
+    logs = db.relationship("UserLog")
     roles = db.relationship('Role', secondary='user_roles')
     groups = db.relationship('Group', secondary='group_users')
 
@@ -67,6 +69,14 @@ class Group(db.Model):
 
     def __repr__(self):
         return 'Group({}, {})'.format(self.id, self.name)
+
+
+class UserLog(db.Model):
+    __tablename__ = 'user_log'
+    id = db.Column(db.Integer(), primary_key=True)
+    message = db.Column(db.String(200), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    user = db.Column(Integer, db.ForeignKey('user.id'))
 
 
 # Define the UserRoles association table
