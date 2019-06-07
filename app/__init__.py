@@ -1,4 +1,4 @@
-from app.config import ProductionConfig, TestConfig
+from app.config import ProductionConfig
 from app.lib.scheduler import BackgroundScheduler
 import datetime
 from flask import Flask, g, session
@@ -24,7 +24,6 @@ from app import routes  # Gives us the base application routes
 
 scheduler = BackgroundScheduler()
 scheduler.start()
-from app.plugins.Plugin import Plugin
 
 # creates a list of all of all the directories in the plugins folder which are
 # the plugin blueprint and add them as blueprints
@@ -73,7 +72,7 @@ def init_db():
     db.session.add(role)
     db.session.commit()
 
-    user = User(username='admin', password='admin', email='admin@admin.com', roles=[role])
+    user = User(username='admin', password=hash_password('admin'), email='admin@admin.com', roles=[role])
     db.session.add(user)
     db.session.commit()
 
