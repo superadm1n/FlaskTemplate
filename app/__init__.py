@@ -1,4 +1,5 @@
 from app.config import ProductionConfig, TestConfig
+from app.lib.scheduler import BackgroundScheduler
 import datetime
 from flask import Flask, g, session
 from flask_bcrypt import Bcrypt
@@ -17,7 +18,6 @@ app_path = os.path.dirname(os.path.abspath(__file__))
 app_dir = os.path.split(app_path)[-1]
 
 from app.lib.passwords import hash_password
-from app.lib.scheduler import BackgroundScheduler
 from app.models import User, Role
 flask_app_obj = Flask(__name__, static_folder='static', template_folder='templates')
 from app import routes  # Gives us the base application routes
@@ -32,6 +32,24 @@ plugin_path = os.path.join(app_path, 'plugins')
 plugins = [x for x in os.listdir(plugin_path)
            if os.path.isdir(os.path.join(plugin_path, x))
            and not x.startswith('__')]
+
+
+@flask_app_obj.before_first_request
+def initialize_database():
+    db.create_all()
+
+
+@flask_app_obj.teardown_request
+def shutdown_session(exception=None):
+    db.session.remove()
+
+
+@flask_app_obj.before_request
+def user_timeout():
+    session.permanent = True
+    flask_app_obj.permanent_session_lifetime = datetime.timedelta(minutes=60)
+    session.modified = True
+    g.user = current_user
 
 
 def register_extensions(app):
@@ -60,15 +78,7 @@ def init_db():
     db.session.commit()
 
 
-def configure_database(app, route_restriction_roles):
-
-    @app.before_first_request
-    def initialize_database():
-        db.create_all()
-
-    @app.teardown_request
-    def shutdown_session(exception=None):
-        db.session.remove()
+def update_plugin_roles(route_restriction_roles):
 
     # takes all of the route restriction roles to the database if they dont exist.
     # this will make sure any plugin will have the proper roles so it doesnt throw a 500 error.
@@ -86,31 +96,15 @@ def configure_logs(app):
     logger.addHandler(StreamHandler())
 
 
-def configure_user_timeout(app):
-
-    '''
-    Sets the user timeout of the app to 60 minutes. The 'user_timeout' function
-    will run whenever the user makes a request to the server.
-    '''
-
-    @app.before_request
-    def user_timeout():
-        session.permanent = True
-        app.permanent_session_lifetime = datetime.timedelta(minutes=60)
-        session.modified = True
-        g.user = current_user
-
-
 def create_app():
     app = flask_app_obj
     app.config.from_object(ProductionConfig)
 
     register_extensions(app)
     route_restrictions = register_plugins(app)
-    configure_database(app, route_restrictions)
+    update_plugin_roles(route_restrictions)
     configure_logs(app)
 
-    configure_user_timeout(app)
     return app
 
 
@@ -124,10 +118,9 @@ def create_test_app(db_file):
     app.config['SECRET_KEY'] = 'Test_key'
 
     register_extensions(app)
-    route_restrictions = register_plugins(app)
-    configure_database(app, route_restrictions)
+    _ = register_plugins(app)
+    #update_plugin_roles(route_restrictions)
     configure_logs(app)
-    configure_user_timeout(app)
     with app.app_context():
         import os
         if not os.path.isfile(db_file):
