@@ -69,14 +69,15 @@ def register_plugins(app):
     # return list of route restrictions for later processing
     return route_restriction_roles
 
-def init_db():
-    role = Role(name='admin')
-    db.session.add(role)
-    db.session.commit()
+def init_db(app):
+    with app.app_context():
+        role = Role(name='admin')
+        db.session.add(role)
+        db.session.commit()
 
-    user = User(username='admin', password=hash_password('admin'), email='admin@admin.com', roles=[role])
-    db.session.add(user)
-    db.session.commit()
+        user = User(username='admin', password=hash_password('admin'), email='admin@admin.com', roles=[role])
+        db.session.add(user)
+        db.session.commit()
 
 
 def update_plugin_roles(route_restriction_roles):
@@ -126,6 +127,6 @@ def create_test_app(db_file):
         import os
         if not os.path.isfile(db_file):
             db.create_all()
-            init_db()
+            init_db(app)
 
     return app
