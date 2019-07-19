@@ -1,9 +1,10 @@
-from flask import Blueprint
+from app.plugins.Plugin import Plugin
 
-blueprint = Blueprint(
-    'test_blueprint',
-    __name__,
+plugin = Plugin(
+    name='test_plugin',
+    import_name=__name__,
     url_prefix='/test',
     template_folder='templates',
-    static_folder='static'
+    static_folder='static',
+    access_roles=['test1', 'test2', 'test3']
 )

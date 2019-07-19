@@ -12,7 +12,9 @@ class User(db.Model, UserMixin):
     email = Column(String(120), unique=True)
     password = Column(String(120))
     last_login = Column(db.DateTime, nullable=True)
+    date_created = db.Column(db.DateTime, default=datetime.datetime.now)
 
+    logs = db.relationship("UserLog")
     roles = db.relationship('Role', secondary='user_roles')
     groups = db.relationship('Group', secondary='group_users')
 
@@ -69,6 +71,14 @@ class Group(db.Model):
         return 'Group({}, {})'.format(self.id, self.name)
 
 
+class UserLog(db.Model):
+    __tablename__ = 'user_log'
+    id = db.Column(db.Integer(), primary_key=True)
+    message = db.Column(db.String(200), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
+    user = db.Column(Integer, db.ForeignKey('user.id'))
+
+
 # Define the UserRoles association table
 class UserRoles(db.Model):
     __tablename__ = 'user_roles'
@@ -98,8 +108,8 @@ def user_loader(id):
     return User.query.filter_by(id=id).first()
 
 
-@login_manager.request_loader
-def request_loader(request):
-    username = request.form.get('username')
-    user = User.query.filter_by(username=username).first()
-    return user if user else None
+#@login_manager.request_loader
+#def request_loader(request):
+#    username = request.form.get('username')
+#    user = User.query.filter_by(username=username).first()
+#    return user if user else None
